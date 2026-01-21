@@ -57,7 +57,7 @@ void handle_input(bool *running, const Uint8 *keys, Entity *player, Entity *bull
     }
 }
 
-void update(Entity *player, Entity *bullet, bool *bullet_active, float dt)
+void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity *enemy)
 {
     player->x += player->vx * dt;
 
@@ -71,6 +71,11 @@ void update(Entity *player, Entity *bullet, bool *bullet_active, float dt)
         bullet->y += bullet->vy * dt;
         if (bullet->y + bullet->h < 0)
             *bullet_active = false;
+    }
+    // Détection collision bullet et enemy
+    if (bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
+        enemy->alive = false;
+        *bullet_active = false;
     }
 }
 
@@ -89,8 +94,10 @@ void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_
     SDL_Rect enemy_rect = {
         (int)enemy->x, (int)enemy->y,
         enemy->w, enemy->h};
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_RenderFillRect(renderer, &enemy_rect);
+    if (enemy->alive == true){
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &enemy_rect);
+    }
 
     if (bullet_active)
     {

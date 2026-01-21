@@ -20,7 +20,8 @@ int main(void)
         .w = PLAYER_WIDTH,
         .h = PLAYER_HEIGHT,
         .vx = 0,
-        .vy = 0
+        .vy = 0,
+        .alive = true,
     };
     
     Entity enemy = {
@@ -29,7 +30,8 @@ int main(void)
         .w = ENEMY_WIDTH,
         .h = ENEMY_HEIGHT,
         .vx = 0,
-        .vy = 0
+        .vy = 0,
+        .alive = true,
     };
     
     Entity bullet = {0}; // Initialise tous les attributs de bullet à 0
@@ -49,7 +51,7 @@ int main(void)
         SDL_PumpEvents();
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         handle_input(&running, keys, &player, &bullet, &bullet_active);
-        update(&player, &bullet, &bullet_active, dt);
+        update(&player, &bullet, &bullet_active, dt, &enemy);
         render(renderer, &player, &bullet, bullet_active, &enemy);
     }
 
