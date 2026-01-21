@@ -32,8 +32,8 @@ int main(void)
         E[i].y = 0;
         E[i].w = ENEMY_WIDTH;
         E[i].h = ENEMY_HEIGHT;
-        E[i].vx = 0;
-        E[i].vy = 100;
+        E[i].vx = ENEMY_SPEED;
+        E[i].vy = ENEMY_SPEED/10;
         E[i].alive = true;
     }
     

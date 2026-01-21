@@ -74,14 +74,42 @@ bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
     }
     int nb_enemy_alive = 0;
 
+    // Détection atteinte bord droit et gauche écran par les enemy
+    float x_min = SCREEN_WIDTH;
+    float x_max = 0.0;
+    for(int i=0; i<NB_ENEMY; i++){
+        Entity *enemy = &(E[i]);
+        if (enemy->alive == true){
+            if (enemy->x < x_min)
+                x_min = enemy->x;
+            if (enemy->x + enemy->w > x_max)
+                x_max = enemy->x+enemy->w;
+        }
+    }
+    if (x_min < 0){
+        for(int i=0; i<NB_ENEMY; i++){
+            Entity *enemy = &(E[i]);
+            enemy->vx = ENEMY_SPEED;
+        } 
+    }
+    if (x_max > SCREEN_WIDTH){
+        for(int i=0; i<NB_ENEMY; i++){
+            Entity *enemy = &(E[i]);
+            enemy->vx = -ENEMY_SPEED;
+        } 
+    }
+
+    // Déplacement, détections de collisions et d'atteinte du bas de l'écran des enemy
     for(int i=0; i<NB_ENEMY; i++){
         Entity *enemy = &(E[i]);
         if (enemy->alive == true){
             nb_enemy_alive++;
             // Déplacement de l'enemy
+
             enemy->y += enemy->vy * dt;
+            enemy->x += enemy->vx * dt;
             // Détection collision bullet et enemy
-            if (bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
+            if (*bullet_active && bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
                 enemy->alive = false;
                 *bullet_active = false;
             }
