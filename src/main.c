@@ -24,15 +24,18 @@ int main(void)
         .alive = true,
     };
     
-    Entity enemy = {
-        .x = 0,
-        .y = 0,
-        .w = ENEMY_WIDTH,
-        .h = ENEMY_HEIGHT,
-        .vx = 0,
-        .vy = 100,
-        .alive = true,
-    };
+    // Tableau contenant les ennemies (E) (ou les Extraterrestres XD )
+    Entity E[NB_ENEMY];
+
+    for(int i = 0; i < NB_ENEMY; i++){
+        E[i].x = i*(ENEMY_WIDTH + 10);
+        E[i].y = 0;
+        E[i].w = ENEMY_WIDTH;
+        E[i].h = ENEMY_HEIGHT;
+        E[i].vx = 0;
+        E[i].vy = 100;
+        E[i].alive = true;
+    }
     
     Entity bullet = {0}; // Initialise tous les attributs de bullet à 0
     bool bullet_active = false;
@@ -51,8 +54,8 @@ int main(void)
         SDL_PumpEvents();
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         handle_input(&running, keys, &player, &bullet, &bullet_active);
-        running = update(&player, &bullet, &bullet_active, dt, &enemy);
-        render(renderer, &player, &bullet, bullet_active, &enemy);
+        running = update(&player, &bullet, &bullet_active, dt, E);
+        render(renderer, &player, &bullet, bullet_active, E);
     }
 
     cleanup(window, renderer);

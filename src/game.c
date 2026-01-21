@@ -57,7 +57,7 @@ void handle_input(bool *running, const Uint8 *keys, Entity *player, Entity *bull
     }
 }
 
-bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity *enemy)
+bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity E[])
 {
     player->x += player->vx * dt;
 
@@ -72,51 +72,65 @@ bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
         if (bullet->y + bullet->h < 0)
             *bullet_active = false;
     }
-    if (enemy->alive == true){
-        // Déplacement de l'enemy
-        enemy->y += enemy->vy * dt;
-        // Détection collision bullet et enemy
-        if (bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
-            enemy->alive = false;
-            *bullet_active = false;
-            return false;
-        }
-        // Detection enemy atteint le bas de l'écran 
-        if (enemy->y + enemy->h > player->y){
-            player->alive = false;
-            return false;
+    int nb_enemy_alive = 0;
+
+    for(int i=0; i<NB_ENEMY; i++){
+        Entity *enemy = &(E[i]);
+        if (enemy->alive == true){
+            nb_enemy_alive++;
+            // Déplacement de l'enemy
+            enemy->y += enemy->vy * dt;
+            // Détection collision bullet et enemy
+            if (bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
+                enemy->alive = false;
+                *bullet_active = false;
+            }
+            // Detection enemy atteint le bas de l'écran 
+            if (enemy->y + enemy->h > player->y){
+                player->alive = false;
+                return false;
+            }
         }
     }
+    if (nb_enemy_alive == 0)
+        return false;
     return true;
 }
 
-void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active, Entity *enemy)
+void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active, Entity E[])
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // couleur noire (0, 0, 0), opaque (255)
     SDL_RenderClear(renderer); // On efface tout sous un voile noir opaque
 
     // On definit un rectangle que SDL dessinera. Il contient les coordonnées et le width et height.
-    SDL_Rect player_rect = {
-        (int)player->x, (int)player->y,
-        player->w, player->h};
     if(player->alive == true){
+        SDL_Rect player_rect = {
+            (int)player->x, (int)player->y,
+            player->w, player->h
+        };
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_RenderFillRect(renderer, &player_rect);
     }
 
-    SDL_Rect enemy_rect = {
-        (int)enemy->x, (int)enemy->y,
-        enemy->w, enemy->h};
-    if (enemy->alive == true){
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &enemy_rect);
+    for (int i=0; i<NB_ENEMY;i++){
+        Entity *enemy = &(E[i]);
+        if (enemy->alive == true){
+            SDL_Rect enemy_rect = {
+                (int)enemy->x, (int)enemy->y,
+                enemy->w, enemy->h
+            };
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_RenderFillRect(renderer, &enemy_rect);
+        }
     }
+
 
     if (bullet_active)
     {
         SDL_Rect bullet_rect = {
             (int)bullet->x, (int)bullet->y,
-            bullet->w, bullet->h};
+            bullet->w, bullet->h
+        };
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &bullet_rect);
     }
