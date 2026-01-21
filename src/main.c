@@ -26,7 +26,7 @@ int main(void)
     
     // Tableau contenant les ennemies (E) (ou les Extraterrestres XD )
     Entity E[NB_ENEMY];
-
+    // On initialise les coordonnées de tous les enemy
     for(int i = 0; i < NB_ENEMY_BY_ROW; i++){
         for(int j=0; j<NB_ENEMY_BY_COLUMN; j++){
             Entity *enemy = &(E[i*3+j]);
