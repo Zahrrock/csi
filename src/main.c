@@ -27,14 +27,17 @@ int main(void)
     // Tableau contenant les ennemies (E) (ou les Extraterrestres XD )
     Entity E[NB_ENEMY];
 
-    for(int i = 0; i < NB_ENEMY; i++){
-        E[i].x = i*(ENEMY_WIDTH + 10);
-        E[i].y = 0;
-        E[i].w = ENEMY_WIDTH;
-        E[i].h = ENEMY_HEIGHT;
-        E[i].vx = ENEMY_SPEED;
-        E[i].vy = ENEMY_SPEED/10;
-        E[i].alive = true;
+    for(int i = 0; i < NB_ENEMY_BY_ROW; i++){
+        for(int j=0; j<NB_ENEMY_BY_COLUMN; j++){
+            Entity *enemy = &(E[i*3+j]);
+            enemy->x = i*(ENEMY_WIDTH + 10);
+            enemy->y = j*(ENEMY_HEIGHT + 10);
+            enemy->w = ENEMY_WIDTH;
+            enemy->h = ENEMY_HEIGHT;
+            enemy->vx = ENEMY_SPEED;
+            enemy->vy = ENEMY_SPEED/10;
+            enemy->alive = true;
+        }
     }
     
     Entity bullet = {0}; // Initialise tous les attributs de bullet à 0
