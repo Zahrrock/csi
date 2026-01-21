@@ -16,7 +16,7 @@ int main(void)
     
     Entity player = {
         .x = SCREEN_WIDTH / 2 - PLAYER_WIDTH / 2,
-        .y = SCREEN_HEIGHT - 60,
+        .y = SCREEN_HEIGHT - PLAYER_HEIGHT,
         .w = PLAYER_WIDTH,
         .h = PLAYER_HEIGHT,
         .vx = 0,
@@ -30,7 +30,7 @@ int main(void)
         .w = ENEMY_WIDTH,
         .h = ENEMY_HEIGHT,
         .vx = 0,
-        .vy = 0,
+        .vy = 100,
         .alive = true,
     };
     
@@ -51,7 +51,7 @@ int main(void)
         SDL_PumpEvents();
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         handle_input(&running, keys, &player, &bullet, &bullet_active);
-        update(&player, &bullet, &bullet_active, dt, &enemy);
+        running = update(&player, &bullet, &bullet_active, dt, &enemy);
         render(renderer, &player, &bullet, bullet_active, &enemy);
     }
 
