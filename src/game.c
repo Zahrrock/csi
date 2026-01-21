@@ -74,16 +74,23 @@ void update(Entity *player, Entity *bullet, bool *bullet_active, float dt)
     }
 }
 
-void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active)
+void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active, Entity *enemy)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // couleur noire (0, 0, 0), opaque (255)
+    SDL_RenderClear(renderer); // On efface tout sous un voile noir opaque
 
+    // On definit un rectangle que SDL dessinera. Il contient les coordonnées et le width et height.
     SDL_Rect player_rect = {
         (int)player->x, (int)player->y,
         player->w, player->h};
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
     SDL_RenderFillRect(renderer, &player_rect);
+
+    SDL_Rect enemy_rect = {
+        (int)enemy->x, (int)enemy->y,
+        enemy->w, enemy->h};
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &enemy_rect);
 
     if (bullet_active)
     {

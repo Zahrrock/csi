@@ -39,7 +39,8 @@ Le code fourni inclut :
 Pour compiler le code de base il vous suffit de taper : 
 
 ```shell
-$ make 
+$ make clean
+$ make
 $ ./space_invaders 
 ```
 

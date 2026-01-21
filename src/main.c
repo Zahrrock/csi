@@ -13,19 +13,30 @@ int main(void)
         return 1;
     }
 
-    bool running = true;
-    Uint32 last_ticks = SDL_GetTicks();
-
+    
     Entity player = {
         .x = SCREEN_WIDTH / 2 - PLAYER_WIDTH / 2,
         .y = SCREEN_HEIGHT - 60,
         .w = PLAYER_WIDTH,
         .h = PLAYER_HEIGHT,
         .vx = 0,
-        .vy = 0};
-
-    Entity bullet = {0};
+        .vy = 0
+    };
+    
+    Entity enemy = {
+        .x = 0,
+        .y = 0,
+        .w = ENEMY_WIDTH,
+        .h = ENEMY_HEIGHT,
+        .vx = 0,
+        .vy = 0
+    };
+    
+    Entity bullet = {0}; // Initialise tous les attributs de bullet à 0
     bool bullet_active = false;
+    
+    bool running = true;
+    Uint32 last_ticks = SDL_GetTicks();
 
     while (running)
     {
@@ -39,7 +50,7 @@ int main(void)
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         handle_input(&running, keys, &player, &bullet, &bullet_active);
         update(&player, &bullet, &bullet_active, dt);
-        render(renderer, &player, &bullet, bullet_active);
+        render(renderer, &player, &bullet, bullet_active, &enemy);
     }
 
     cleanup(window, renderer);
