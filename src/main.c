@@ -12,8 +12,11 @@ int main(void)
     {
         return 1;
     }
+    Entity *List_Entities[NB_ENTITY_MAX];
+    for(int i=0; i<NB_ENTITY_MAX; i++){
+        List_Entities[i] = NULL;
+    }
 
-    
     Entity player = {
         .x = SCREEN_WIDTH / 2 - PLAYER_WIDTH / 2,
         .y = SCREEN_HEIGHT - PLAYER_HEIGHT,
@@ -24,7 +27,7 @@ int main(void)
         .health = PLAYER_HEALTH,
         .alive = true,
     };
-    
+    add_entity(List_Entities, &player);
     // Tableau contenant les ennemies (E) (ou les Extraterrestres XD )
     Entity E[NB_ENEMY];
     // On initialise les coordonnées de tous les enemy
@@ -39,6 +42,7 @@ int main(void)
             enemy->vy = ENEMY_SPEED/10;
             enemy->health = ENEMY_HEALTH;
             enemy->alive = true;
+            add_entity(List_Entities, enemy);
         }
     }
     

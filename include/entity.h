@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+
+
 typedef struct
 {
     float x, y;
@@ -9,5 +11,6 @@ typedef struct
     float health;
     bool alive;
 } Entity;
+
 
 #endif

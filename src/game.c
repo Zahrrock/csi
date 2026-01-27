@@ -57,19 +57,35 @@ void handle_input(bool *running, const Uint8 *keys, Entity *player, Entity *bull
     }
 }
 
+
+
+void move(Entity *entity, float dt)
+{
+    entity->x += entity->vx * dt;
+    entity->y += entity->vy * dt;
+}
+
+bool collision(Entity *entity1, Entity *entity2)
+{
+    if (entity1->x + entity1->w > entity2->x && entity1->x < entity2->x + entity2->w && entity1->y < entity2->y + entity2->h)
+        return true;
+    return false;
+}
+
 void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity E[], bool *running)
 {
     // UPDATE PLAYER
-    player->x += player->vx * dt;
-
+    move(player, dt);
     if (player->x < 0)
         player->x = 0;
     if (player->x + player->w > SCREEN_WIDTH)
         player->x = SCREEN_WIDTH - player->w;
 
+    // UPDATE BULLET
     if (*bullet_active)
     {
-        bullet->y += bullet->vy * dt;
+        move(bullet, dt);
+        // Condition atteinte bord
         if (bullet->y + bullet->h < 0)
             *bullet_active = false;
     }
@@ -101,7 +117,6 @@ void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
         } 
     }
 
-    player->health -= 1;
     // Déplacement, détections de collisions et d'atteinte du bas de l'écran des enemy
     for(int i=0; i<NB_ENEMY; i++){
         Entity *enemy = &(E[i]);
@@ -109,10 +124,9 @@ void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
             nb_enemy_alive++;
             // Déplacement de l'enemy
 
-            enemy->y += enemy->vy * dt;
-            enemy->x += enemy->vx * dt;
+            move(enemy, dt);
             // Détection collision bullet et enemy
-            if (*bullet_active && bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
+            if (*bullet_active && collision(bullet, enemy)){
                 enemy->health -= BULLET_DAMAGE;
                 *bullet_active = false;
                 if (enemy->health<=0)
@@ -125,9 +139,37 @@ void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
             }
         }
     }
+
+    // tir des enemy
+    //srand(time(NULL));  // initialise le générateur
+    //int r = rand() % NB_ENEMY;
+    
+
     if (nb_enemy_alive == 0 || player->health == 0)
         *running = false;
 }
+
+void add_entity(Entity *List_Entities[], Entity *entity)
+{
+    for(int i=0;i<NB_ENTITY_MAX;i++){
+        if (List_Entities[i] == NULL){
+            List_Entities[i] = entity;
+            break;
+        }
+    }
+}
+void remove_entity(Entity *List_Entities[], Entity *entity)
+{
+    for(int i=0;i<NB_ENTITY_MAX;i++){
+        if (List_Entities[i] == entity){
+            List_Entities[i] = NULL;
+            break;
+        }
+    }
+}
+
+
+
 
 void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active, Entity E[])
 {
