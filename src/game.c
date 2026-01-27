@@ -1,4 +1,6 @@
 #include <SDL.h>
+#include "const.h"
+#include "entity.h"
 #include "game.h"
 #include <stdio.h>
 
@@ -30,27 +32,21 @@ bool init(SDL_Window **window, SDL_Renderer **renderer)
 
     return true;
 }
-void add_entity(Entity *List_Entities[], Entity *entity)
+void add_entity(Entity *Storage[], Entity *entity)
 {
     for(int i=0;i<NB_ENTITY_MAX;i++){
-        if (List_Entities[i] == NULL){
-            List_Entities[i] = entity;
+        if (Storage[i] == NULL){
+            Storage[i] = entity;
             break;
         }
     }
 }
-void remove_entity(Entity *List_Entities[], Entity *entity, Entity *E[])
+void remove_entity(Entity *Storage[], Entity *entity)
 {
     for(int i=0;i<NB_ENTITY_MAX;i++){
-        if (List_Entities[i] == entity){
+        if (Storage[i] == entity){
             free(entity);
-            List_Entities[i] = NULL;
-            break;
-        }
-    }
-    for(int i=0;i<NB_ENTITY_MAX;i++){
-        if (E[i] == entity){
-            E[i] = NULL;
+            Storage[i] = NULL;
             break;
         }
     }
@@ -90,128 +86,80 @@ bool collision(Entity *entity1, Entity *entity2)
     return false;
 }
 
-void update(Entity *player, float dt, Entity *E[], bool *running, bool *new_bullet_demand, Entity *List_Entities[])
+void update(float dt, GAME_STATE Game)
 {
+    Entity *player = Game.player;
     // DEPLACEMENT des entités
-    for(int i=0; i<NB_ENTITY_MAX; i++){
-        Entity *entity = List_Entities[i];
-        if (entity != NULL)
-            move(entity, dt);
-    }
-    // DETECTION des collisions
-    for(int i=0; i<NB_ENTITY_MAX; i++){
-        Entity *entity1 = List_Entities[i];
-        if (entity1 != NULL && entity1->type == 2){
-            for(int i=0; i<NB_ENTITY_MAX; i++){
-                Entity *entity2 = List_Entities[i];
-                if (entity2 != NULL && entity2->type != 2){
-                    if (collision(entity1, entity2)){
-                        entity2->health = 0;
-                        entity1->health = 0;
-                    }
-                }
-            }
-        }
+    for(int i=0; i<Game.nb_entity; i++){
+        Entity *entity = Game.Entities[i];
+        move(entity, dt);
     }
     // BORDERS PLAYER
     if (player->x < 0)
-        player->x = 0;
+    player->x = 0;
     if (player->x + player->w > SCREEN_WIDTH)
-        player->x = SCREEN_WIDTH - player->w;
-
-    // NEW BULLET
-    if (*new_bullet_demand) {
-        Entity *bullet = malloc(sizeof(Entity));
-        *bullet = (Entity){
-            .x = player->x + player->w / 2 - BULLET_WIDTH / 2,
-            .y = player->y - BULLET_HEIGHT - 10,
-            .w = BULLET_WIDTH,
-            .h = BULLET_HEIGHT,
-            .vx = 0,
-            .vy = -BULLET_SPEED,
-            .health = PLAYER_HEALTH,
-            .alive = true,
-            .type = 2,
-        };
-
-        add_entity(List_Entities, bullet);
-        *new_bullet_demand = false;
-    }
-
-    int nb_enemy_alive = 0;
-
+    player->x = SCREEN_WIDTH - player->w;
+    
     // UPDATE ENNEMIES
     // Détection atteinte bord droit et gauche écran par les enemy
     float x_min = SCREEN_WIDTH;
     float x_max = 0.0;
-    for(int i=0; i<NB_ENEMY; i++){
-        if (E[i] != NULL){
-            Entity *enemy = E[i];
-            if (enemy->alive == true){
-                if (enemy->x < x_min)
-                    x_min = enemy->x;
-                if (enemy->x + enemy->w > x_max)
-                    x_max = enemy->x+enemy->w;
-            }
+    for(int i=0; i<Game.nb_enemy; i++){
+        Entity *enemy = Game.E[i];
+        if (enemy->alive == true){
+            if (enemy->x < x_min)
+            x_min = enemy->x;
+            if (enemy->x + enemy->w > x_max)
+            x_max = enemy->x+enemy->w;
         }
     }
     if (x_min < 0){
-        for(int i=0; i<NB_ENEMY; i++){
-            if (E[i] != NULL){
-                Entity *enemy = E[i];
-                enemy->vx = ENEMY_SPEED;
-            }
+        for(int i=0; i<Game.nb_enemy; i++){
+            Entity *enemy = Game.E[i];
+            enemy->vx = ENEMY_SPEED;
         } 
     }
     if (x_max > SCREEN_WIDTH){
-        for(int i=0; i<NB_ENEMY; i++){
-            if (E[i] != NULL){
-                Entity *enemy = E[i];
-                enemy->vx = -ENEMY_SPEED;
-            }
+        for(int i=0; i<Game.nb_enemy; i++){
+            Entity *enemy = Game.E[i];
+            enemy->vx = -ENEMY_SPEED;
         } 
     }
-
+    
     // Détection d'atteinte du bas de l'écran des enemy
-    for(int i=0; i<NB_ENEMY; i++){
-        if (E[i] != NULL){
-            Entity *enemy = E[i];
-            if (enemy->alive == true){
-                nb_enemy_alive++;
-                // Detection enemy atteint le bas de l'écran 
-                if (enemy->y + enemy->h > player->y){
-                    player->health = 0;
-                    *running = false;
-                }
-            }
+    for(int i=0; i<Game.nb_enemy; i++){
+        Entity *enemy = Game.E[i];
+        if (enemy->y + enemy->h > player->y){
+            player->health = 0;
         }
     }
-
+    
     // tir des enemy
     //srand(time(NULL));  // initialise le générateur
     //int r = rand() % NB_ENEMY;
     
-    // SUPPRESSION DES ENTITES MORTES
-    for(int i=0; i<NB_ENTITY_MAX; i++){
-        Entity *entity = List_Entities[i];
-        if (entity != NULL && entity->alive == true && entity->health <= 0){
-            entity->alive = false;
-            remove_entity(List_Entities, entity, E);
+    // DETECTION des collisions
+    for(int i=0; i<Game.nb_bullets; i++){
+        Entity *bullet = Game.B[i];
+        for(int j=0; j<Game.nb_enemy; j++){
+            Entity *enemy = Game.E[i];
+            if (collision(bullet, enemy)){
+                bullet->health = 0;
+                enemy->health = 0;
+            }
         }
     }
-    if (nb_enemy_alive == 0 || player->health == 0)
-        *running = false;
 }
 
 
 
-void render(SDL_Renderer *renderer, Entity *List_Entities[])
+void render(SDL_Renderer *renderer, GAME_STATE Game)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // couleur noire (0, 0, 0), opaque (255)
     SDL_RenderClear(renderer); // On efface tout sous un voile noir opaque
 
     for(int i=0; i<NB_ENTITY_MAX; i++){
-        Entity *entity = List_Entities[i];
+        Entity *entity = Game.Entities[i];
         if (entity != NULL && entity->alive == true){
             // On definit un rectangle que SDL dessinera. Il contient les coordonnées, le width et height.
             SDL_Rect rect = {
