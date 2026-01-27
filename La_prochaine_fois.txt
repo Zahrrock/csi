@@ -1,2 +1,1 @@
-Trouver une façon de ne travailler qu'avec List_entities[] et pas E[]
-Faire tirer les enemies
+Refaire marcher le jeu. Est-ce pcq j'update toutes les positions avant de vérifier les colisions ? (CF Quentin)
