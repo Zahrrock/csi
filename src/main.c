@@ -21,6 +21,7 @@ int main(void)
         .h = PLAYER_HEIGHT,
         .vx = 0,
         .vy = 0,
+        .health = PLAYER_HEALTH,
         .alive = true,
     };
     
@@ -36,6 +37,7 @@ int main(void)
             enemy->h = ENEMY_HEIGHT;
             enemy->vx = ENEMY_SPEED;
             enemy->vy = ENEMY_SPEED/10;
+            enemy->health = ENEMY_HEALTH;
             enemy->alive = true;
         }
     }
@@ -57,7 +59,7 @@ int main(void)
         SDL_PumpEvents();
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
         handle_input(&running, keys, &player, &bullet, &bullet_active);
-        running = update(&player, &bullet, &bullet_active, dt, E);
+        update(&player, &bullet, &bullet_active, dt, E, &running);
         render(renderer, &player, &bullet, bullet_active, E);
     }
 

@@ -6,6 +6,7 @@ typedef struct
     float x, y;
     float vx, vy;
     int w, h;
+    float health;
     bool alive;
 } Entity;
 

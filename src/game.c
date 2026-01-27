@@ -57,8 +57,9 @@ void handle_input(bool *running, const Uint8 *keys, Entity *player, Entity *bull
     }
 }
 
-bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity E[])
+void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity E[], bool *running)
 {
+    // UPDATE PLAYER
     player->x += player->vx * dt;
 
     if (player->x < 0)
@@ -74,6 +75,7 @@ bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
     }
     int nb_enemy_alive = 0;
 
+    // UPDATE ENNEMIES
     // Détection atteinte bord droit et gauche écran par les enemy
     float x_min = SCREEN_WIDTH;
     float x_max = 0.0;
@@ -99,6 +101,7 @@ bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
         } 
     }
 
+    player->health -= 1;
     // Déplacement, détections de collisions et d'atteinte du bas de l'écran des enemy
     for(int i=0; i<NB_ENEMY; i++){
         Entity *enemy = &(E[i]);
@@ -110,19 +113,20 @@ bool update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entit
             enemy->x += enemy->vx * dt;
             // Détection collision bullet et enemy
             if (*bullet_active && bullet->x + bullet->w > enemy->x && bullet->x < enemy->x + enemy->w && bullet->y < enemy->y + enemy->h){
-                enemy->alive = false;
+                enemy->health -= BULLET_DAMAGE;
                 *bullet_active = false;
+                if (enemy->health<=0)
+                    enemy->alive = false;
             }
             // Detection enemy atteint le bas de l'écran 
             if (enemy->y + enemy->h > player->y){
                 player->alive = false;
-                return false;
+                *running = false;
             }
         }
     }
-    if (nb_enemy_alive == 0)
-        return false;
-    return true;
+    if (nb_enemy_alive == 0 || player->health == 0)
+        *running = false;
 }
 
 void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active, Entity E[])
