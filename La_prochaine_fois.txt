@@ -1,0 +1,2 @@
+Trouver une façon de ne travailler qu'avec List_entities[] et pas E[]
+Faire tirer les enemies

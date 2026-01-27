@@ -10,6 +10,7 @@ typedef struct
     int w, h;
     float health;
     bool alive;
+    int type; // PLAYER = 0, ENEMY = 1, BULLET = 2
 } Entity;
 
 

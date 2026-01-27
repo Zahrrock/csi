@@ -31,15 +31,14 @@
 
 bool init(SDL_Window **window, SDL_Renderer **renderer);
 void add_entity(Entity *List_Entities[], Entity *entity);
-void remove_entity(Entity *List_Entities[], Entity *entity);
-void handle_input(bool *running, const Uint8 *keys, Entity *player, Entity *bullet, bool *bullet_active);
+void remove_entity(Entity *List_Entities[], Entity *entity, Entity *E[]);
+void handle_input(bool *running, const Uint8 *keys, Entity *player, bool *new_bullet_demand);
 
 void move(Entity *entity, float dt);
 bool collision(Entity *entity1, Entity *entity2);
-void update(Entity *player, Entity *bullet, bool *bullet_active, float dt, Entity E[], bool *running);
+void update(Entity *player, float dt, Entity *E[], bool *running, bool *new_bullet_demand, Entity *List_Entities[]);
 
-
-void render(SDL_Renderer *renderer, Entity *player, Entity *bullet, bool bullet_active, Entity E[]);
+void render(SDL_Renderer *renderer, Entity *List_Entities[]);
 void cleanup(SDL_Window *window, SDL_Renderer *renderer);
 
 #endif
