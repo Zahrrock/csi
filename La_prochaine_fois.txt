@@ -1,1 +1,0 @@
-Refaire marcher le jeu. Est-ce pcq j'update toutes les positions avant de vérifier les colisions ? (CF Quentin)
