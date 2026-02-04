@@ -244,14 +244,50 @@ bool collision(Entity *entity1, Entity *entity2)
         return true;
     return false;
 }
+void check_borders(GAME *Game){
+    // ENEMY ATTEINT BORD DROIT OU GAUCHE
+    float x_min = SCREEN_WIDTH;
+    float x_max = 0.0;
+    float y_max = 0.0;
+    for(int i=0; i<Game->nb_enemies; i++){
+        Entity *enemy = Game->Enemies[i];
+        if (enemy->x < x_min)
+            x_min = enemy->x;
+        if (enemy->x + enemy->w > x_max)
+            x_max = enemy->x+enemy->w;
+        if(enemy->y+ENEMY_HEIGHT> y_max)
+            y_max = enemy->y+ENEMY_HEIGHT;
+    }
+    if (x_min < Game->current_dt*ENEMY_SPEED){
+        for(int i=0; i<Game->nb_enemies; i++){
+            Game->Enemies[i]->vx = ENEMY_SPEED;
+        } 
+    }
+    if (x_max > SCREEN_WIDTH - Game->current_dt*ENEMY_SPEED){
+        for(int i=0; i<Game->nb_enemies; i++){
+            Game->Enemies[i]->vx = -ENEMY_SPEED;
+        } 
+    }
+
+    // ENEMY ATTEINT BAS
+    if(y_max > SCREEN_HEIGHT - PLAYER_HEIGHT)
+        Game->running = false;
+
+}
 void update_positions(GAME *Game)
 {
+    check_borders(Game);
     for(int i=0;i<Game->nb_entities;i++){
         Entity *entity = Game->Entities[i];
         float new_x = entity->x + entity->vx * Game->current_dt;
         float new_y = entity->y + entity->vy * Game->current_dt;
         bool is_collision = false;
+        
         if(entity->type == PLAYER){
+            if(new_x>SCREEN_WIDTH)
+                new_x = SCREEN_WIDTH-PLAYER_WIDTH;
+            if(new_x<0)
+                new_x = 0;
             for(int i=0;i<Game->nb_bullets_enemy;i++){
                 if(collision(entity, Game->Bullets_enemies[i])){
                     Game->player->health = 0;

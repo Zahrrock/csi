@@ -9,10 +9,8 @@ int main(){
         return 1;
     
     // BOUCLE DE JEU
-    int i = 0;
-    while(i<1000){
+    while(Game.running){
         update(&Game);
-        i++;
     }
 
     cleanup(Game.window, Game.renderer);
