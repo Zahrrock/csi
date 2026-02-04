@@ -10,7 +10,7 @@ int main(){
     
     // BOUCLE DE JEU
     int i = 0;
-    while(i<1){
+    while(i<1000){
         update(&Game);
         i++;
     }

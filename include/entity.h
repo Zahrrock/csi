@@ -19,7 +19,7 @@ typedef struct {
 } Entity;
 
 typedef struct {
-    bool running, new_bullet_demand;
+    bool running;
     int nb_enemies, nb_bullets_player, nb_bullets_enemy, nb_entities;
     Entity *player;
     Entity *Enemies[NB_ENEMY], *Bullets_player[NB_BULLET_PLAYER_MAX], *Bullets_enemies[NB_BULLET_ENEMIES_MAX], *Entities[NB_ENTITY_MAX];
